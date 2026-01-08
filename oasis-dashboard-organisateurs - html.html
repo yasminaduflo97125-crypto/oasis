@@ -1,0 +1,901 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>L'Oasis des Héros - Dashboard Organisateurs</title>
+    <link href="https://fonts.googleapis.com/css2?family=Pacifico&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            min-height: 100vh;
+            background: linear-gradient(180deg, 
+                #0a0a1a 0%, 
+                #0d1a2d 15%,
+                #0a1f3d 30%, 
+                #0c2847 50%,
+                #0a2a4a 70%,
+                #061428 100%
+            );
+            background-attachment: fixed;
+            color: #fff;
+        }
+
+        /* Header */
+        .header {
+            background: rgba(10, 20, 40, 0.8);
+            backdrop-filter: blur(20px);
+            padding: 20px 30px;
+            border-bottom: 1px solid rgba(100, 150, 255, 0.15);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .logo h1 {
+            font-family: 'Pacifico', cursive;
+            font-size: 2rem;
+            background: linear-gradient(135deg, #bf7fff 0%, #ff6b9d 50%, #ffcd56 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .logo span {
+            font-size: 0.9rem;
+            color: rgba(255, 255, 255, 0.6);
+            font-weight: 400;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+
+        .status-badge {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(74, 222, 128, 0.2);
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            color: #4ade80;
+        }
+
+        .status-dot {
+            width: 10px;
+            height: 10px;
+            background: #4ade80;
+            border-radius: 50%;
+            animation: pulse-dot 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse-dot {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.5; transform: scale(1.2); }
+        }
+
+        .hero-count {
+            background: rgba(255, 107, 157, 0.2);
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            color: #ff6b9d;
+            font-weight: 600;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border-radius: 10px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            font-family: 'Poppins', sans-serif;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: none;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #ff6b9d 0%, #c44569 100%);
+            color: #fff;
+            box-shadow: 0 4px 15px rgba(255, 107, 157, 0.3);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(255, 107, 157, 0.4);
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.1);
+            color: #fff;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .btn-vote {
+            background: linear-gradient(135deg, #4ade80 0%, #22c55e 100%);
+            color: #fff;
+            box-shadow: 0 4px 15px rgba(74, 222, 128, 0.3);
+        }
+
+        .btn-vote:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(74, 222, 128, 0.4);
+        }
+
+        /* Main content */
+        .main-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 30px;
+        }
+
+        /* Mode selector */
+        .mode-tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 30px;
+            background: rgba(10, 20, 40, 0.6);
+            padding: 8px;
+            border-radius: 15px;
+            width: fit-content;
+        }
+
+        .mode-tab {
+            padding: 12px 25px;
+            border-radius: 10px;
+            font-size: 0.95rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: transparent;
+            color: rgba(255, 255, 255, 0.6);
+            border: none;
+        }
+
+        .mode-tab.active {
+            background: linear-gradient(135deg, #ff6b9d 0%, #c44569 100%);
+            color: #fff;
+            box-shadow: 0 4px 15px rgba(255, 107, 157, 0.3);
+        }
+
+        .mode-tab:hover:not(.active) {
+            color: #fff;
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        /* Gallery grid */
+        .gallery-section {
+            display: block;
+        }
+
+        .gallery-section.hidden {
+            display: none;
+        }
+
+        .gallery-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 25px;
+        }
+
+        /* Hero card */
+        .hero-card {
+            background: rgba(10, 20, 40, 0.7);
+            backdrop-filter: blur(15px);
+            border-radius: 20px;
+            overflow: hidden;
+            border: 1px solid rgba(100, 150, 255, 0.15);
+            transition: all 0.4s ease;
+            animation: cardAppear 0.5s ease;
+        }
+
+        @keyframes cardAppear {
+            from {
+                opacity: 0;
+                transform: translateY(30px) scale(0.9);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        .hero-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(255, 107, 157, 0.2);
+            border-color: rgba(255, 107, 157, 0.3);
+        }
+
+        .hero-card-image {
+            width: 100%;
+            aspect-ratio: 1;
+            background: rgba(0, 0, 0, 0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        .hero-card-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .hero-card-image .placeholder {
+            font-size: 4rem;
+            opacity: 0.3;
+        }
+
+        .hero-card-content {
+            padding: 20px;
+        }
+
+        .hero-card-name {
+            font-family: 'Pacifico', cursive;
+            font-size: 1.4rem;
+            color: #fff;
+            margin-bottom: 8px;
+        }
+
+        .hero-card-power {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: rgba(255, 107, 157, 0.2);
+            padding: 6px 12px;
+            border-radius: 15px;
+            font-size: 0.85rem;
+            color: #ff6b9d;
+            margin-bottom: 10px;
+        }
+
+        .hero-card-creators {
+            font-size: 0.85rem;
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        .hero-card-creators strong {
+            color: #ffcd56;
+        }
+
+        /* Vote mode */
+        .vote-section {
+            display: none;
+        }
+
+        .vote-section.active {
+            display: block;
+        }
+
+        .vote-header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .vote-header h2 {
+            font-family: 'Pacifico', cursive;
+            font-size: 2.5rem;
+            color: #ff6b9d;
+            margin-bottom: 10px;
+        }
+
+        .vote-header p {
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 1.1rem;
+        }
+
+        .vote-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 30px;
+        }
+
+        .vote-card {
+            background: rgba(10, 20, 40, 0.7);
+            backdrop-filter: blur(15px);
+            border-radius: 25px;
+            overflow: hidden;
+            border: 2px solid rgba(100, 150, 255, 0.15);
+            transition: all 0.4s ease;
+            cursor: pointer;
+        }
+
+        .vote-card:hover {
+            transform: translateY(-5px) scale(1.02);
+            border-color: rgba(255, 107, 157, 0.5);
+            box-shadow: 0 20px 50px rgba(255, 107, 157, 0.2);
+        }
+
+        .vote-card.voted {
+            border-color: #4ade80;
+            box-shadow: 0 0 30px rgba(74, 222, 128, 0.3);
+        }
+
+        .vote-card-image {
+            width: 100%;
+            aspect-ratio: 1;
+            background: rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+        }
+
+        .vote-card-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.4s ease;
+        }
+
+        .vote-card:hover .vote-card-image img {
+            transform: scale(1.05);
+        }
+
+        .vote-card-content {
+            padding: 20px;
+            text-align: center;
+        }
+
+        .vote-card-name {
+            font-family: 'Pacifico', cursive;
+            font-size: 1.5rem;
+            color: #fff;
+            margin-bottom: 10px;
+        }
+
+        .vote-card-power {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: rgba(255, 107, 157, 0.2);
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            color: #ff6b9d;
+            margin-bottom: 15px;
+        }
+
+        .vote-btn {
+            width: 100%;
+            padding: 12px;
+            background: linear-gradient(135deg, #ff6b9d 0%, #c44569 100%);
+            border: none;
+            border-radius: 12px;
+            color: #fff;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .vote-btn:hover {
+            box-shadow: 0 5px 20px rgba(255, 107, 157, 0.4);
+        }
+
+        .vote-card.voted .vote-btn {
+            background: linear-gradient(135deg, #4ade80 0%, #22c55e 100%);
+        }
+
+        .vote-count {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            margin-top: 15px;
+            font-size: 1.2rem;
+            color: #ffcd56;
+            font-weight: 600;
+        }
+
+        /* Results - Winner */
+        .results-section {
+            display: none;
+        }
+
+        .results-section.active {
+            display: block;
+        }
+
+        .results-header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .results-header h2 {
+            font-family: 'Pacifico', cursive;
+            font-size: 2.5rem;
+            color: #ffcd56;
+        }
+
+        .winner-card {
+            max-width: 400px;
+            margin: 0 auto;
+            background: rgba(10, 20, 40, 0.8);
+            border-radius: 30px;
+            padding: 40px;
+            border: 3px solid #ffd700;
+            box-shadow: 0 0 60px rgba(255, 215, 0, 0.3);
+            text-align: center;
+            animation: winner-appear 1s ease forwards;
+        }
+
+        @keyframes winner-appear {
+            0% { opacity: 0; transform: scale(0.8) translateY(30px); }
+            50% { transform: scale(1.05) translateY(-10px); }
+            100% { opacity: 1; transform: scale(1) translateY(0); }
+        }
+
+        .winner-crown {
+            font-size: 5rem;
+            margin-bottom: 20px;
+            animation: crown-bounce 2s ease-in-out infinite;
+        }
+
+        @keyframes crown-bounce {
+            0%, 100% { transform: translateY(0) rotate(-5deg); }
+            50% { transform: translateY(-10px) rotate(5deg); }
+        }
+
+        .winner-image {
+            width: 200px;
+            height: 200px;
+            border-radius: 50%;
+            margin: 0 auto 25px;
+            overflow: hidden;
+            border: 5px solid #ffd700;
+            background: #fff;
+            box-shadow: 0 0 40px rgba(255, 215, 0, 0.4);
+        }
+
+        .winner-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+
+        .winner-name {
+            font-family: 'Pacifico', cursive;
+            font-size: 2.5rem;
+            color: #fff;
+            margin-bottom: 10px;
+            text-shadow: 0 0 20px rgba(255, 215, 0, 0.5);
+        }
+
+        .winner-creators {
+            color: #ffcd56;
+            font-size: 1.2rem;
+            margin-bottom: 20px;
+        }
+
+        .winner-votes {
+            display: inline-block;
+            background: rgba(255, 215, 0, 0.2);
+            padding: 12px 30px;
+            border-radius: 30px;
+            color: #ffd700;
+            font-size: 1.4rem;
+            font-weight: 600;
+            border: 2px solid rgba(255, 215, 0, 0.4);
+        }
+
+        /* Empty state */
+        .empty-state {
+            text-align: center;
+            padding: 80px 20px;
+            color: rgba(255, 255, 255, 0.5);
+        }
+
+        .empty-state .icon {
+            font-size: 5rem;
+            margin-bottom: 20px;
+            opacity: 0.3;
+        }
+
+        .empty-state h3 {
+            font-size: 1.5rem;
+            margin-bottom: 10px;
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        .empty-state p {
+            font-size: 1rem;
+        }
+
+        /* Refresh indicator */
+        .refresh-indicator {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: rgba(10, 20, 40, 0.9);
+            backdrop-filter: blur(10px);
+            padding: 12px 20px;
+            border-radius: 30px;
+            font-size: 0.85rem;
+            color: rgba(255, 255, 255, 0.7);
+            border: 1px solid rgba(100, 150, 255, 0.2);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .refresh-spinner {
+            width: 16px;
+            height: 16px;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            border-top-color: #ff6b9d;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .header-content {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .header-actions {
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+
+            .main-content {
+                padding: 20px;
+            }
+
+            .mode-tabs {
+                width: 100%;
+                justify-content: center;
+            }
+
+            .podium {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .podium-place:nth-child(2) {
+                order: -1;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="header-content">
+            <div class="logo">
+                <h1>L'Oasis des Héros</h1>
+                <span>Dashboard Organisateurs</span>
+            </div>
+            <div class="header-actions">
+                <div class="status-badge">
+                    <div class="status-dot"></div>
+                    <span>En direct</span>
+                </div>
+                <div class="hero-count">
+                    <span id="heroCount">0</span> héros créés
+                </div>
+                <button class="btn btn-secondary" onclick="refreshData()">🔄 Actualiser</button>
+                <button class="btn btn-vote" id="voteControlBtn" onclick="toggleVote()">🗳️ Lancer le vote</button>
+                <button class="btn btn-primary" onclick="toggleFullscreen()">⛶ Plein écran</button>
+            </div>
+        </div>
+    </header>
+
+    <main class="main-content">
+        <!-- Mode tabs -->
+        <div class="mode-tabs">
+            <button class="mode-tab active" onclick="switchMode('gallery')">📋 Galerie</button>
+            <button class="mode-tab" onclick="switchMode('vote')">🗳️ Mode Vote</button>
+            <button class="mode-tab" onclick="switchMode('results')">🏆 Résultats</button>
+        </div>
+
+        <!-- Gallery Section -->
+        <section class="gallery-section" id="gallerySection">
+            <div class="gallery-grid" id="galleryGrid">
+                <!-- Les cartes seront ajoutées ici dynamiquement -->
+            </div>
+            <div class="empty-state" id="emptyState">
+                <div class="icon">🦸</div>
+                <h3>En attente des héros...</h3>
+                <p>Les créations apparaîtront ici en temps réel</p>
+            </div>
+        </section>
+
+        <!-- Vote Section -->
+        <section class="vote-section" id="voteSection">
+            <div class="vote-header">
+                <h2>🗳️ Votez pour votre héros préféré !</h2>
+                <p>Cliquez sur une carte pour voter</p>
+            </div>
+            <div class="vote-grid" id="voteGrid">
+                <!-- Les cartes de vote seront ajoutées ici -->
+            </div>
+        </section>
+
+        <!-- Results Section -->
+        <section class="results-section" id="resultsSection">
+            <div class="results-header">
+                <h2>🏆 Le Gagnant</h2>
+            </div>
+            <div class="winner-card" id="winnerCard">
+                <div class="winner-crown">👑</div>
+                <div class="winner-image">
+                    <img id="winnerImg" src="" alt="Gagnant">
+                </div>
+                <h3 class="winner-name" id="winnerName">-</h3>
+                <p class="winner-creators" id="winnerCreators">-</p>
+                <div class="winner-votes" id="winnerVotes">0 votes</div>
+            </div>
+        </section>
+    </main>
+
+    <div class="refresh-indicator">
+        <div class="refresh-spinner"></div>
+        <span>Actualisation auto toutes les 5s</span>
+    </div>
+
+    <script>
+        // Configuration
+        const API_URL = 'https://script.google.com/macros/s/AKfycbwgRw8FaB_DDCxJEzXnXkajnbBZ16F0Q55MksyDZizM_O4qCZMm4SBgZmvBRq1_Ge465g/exec';
+        let heroes = [];
+        let votes = {};
+        let currentMode = 'gallery';
+        let refreshInterval;
+
+        // État du vote
+        let voteStatus = localStorage.getItem('oasis_vote_status') || 'waiting';
+        updateVoteButton();
+
+        // Contrôle du vote
+        function toggleVote() {
+            if (voteStatus === 'waiting') {
+                voteStatus = 'active';
+                localStorage.setItem('oasis_vote_status', 'active');
+            } else if (voteStatus === 'active') {
+                voteStatus = 'ended';
+                localStorage.setItem('oasis_vote_status', 'ended');
+            } else {
+                // Reset pour un nouveau vote
+                voteStatus = 'waiting';
+                localStorage.setItem('oasis_vote_status', 'waiting');
+                localStorage.removeItem('oasis_votes');
+            }
+            updateVoteButton();
+        }
+
+        function updateVoteButton() {
+            const btn = document.getElementById('voteControlBtn');
+            if (voteStatus === 'waiting') {
+                btn.textContent = '🗳️ Lancer le vote';
+                btn.style.background = 'linear-gradient(135deg, #4ade80 0%, #22c55e 100%)';
+            } else if (voteStatus === 'active') {
+                btn.textContent = '⏹️ Terminer le vote';
+                btn.style.background = 'linear-gradient(135deg, #f97316 0%, #ea580c 100%)';
+            } else {
+                btn.textContent = '🔄 Nouveau vote';
+                btn.style.background = 'linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%)';
+            }
+        }
+
+        // Charger les données
+        async function loadData() {
+            try {
+                const response = await fetch(API_URL);
+                const data = await response.json();
+                
+                if (Array.isArray(data)) {
+                    heroes = data.filter(h => h.NomHeros || h['NomHéros']); // Filtrer les lignes vides
+                    updateUI();
+                }
+            } catch (error) {
+                console.error('Erreur de chargement:', error);
+            }
+        }
+
+        // Mettre à jour l'interface
+        function updateUI() {
+            document.getElementById('heroCount').textContent = heroes.length;
+            
+            if (heroes.length === 0) {
+                document.getElementById('emptyState').style.display = 'block';
+                document.getElementById('galleryGrid').innerHTML = '';
+            } else {
+                document.getElementById('emptyState').style.display = 'none';
+                renderGallery();
+                renderVoteCards();
+            }
+        }
+
+        // Fonction pour récupérer la valeur d'un champ (avec ou sans accent)
+        function getHeroField(hero, field) {
+            const fieldMap = {
+                'NomHeros': ['NomHeros', 'NomHéros'],
+                'Prenom1': ['Prenom1', 'Prénom1'],
+                'Prenom2': ['Prenom2', 'Prénom 2', 'Prénom2'],
+                'LogoURL': ['LogoURL'],
+                'Pouvoir': ['Pouvoir']
+            };
+            
+            const possibleKeys = fieldMap[field] || [field];
+            for (let key of possibleKeys) {
+                if (hero[key]) return hero[key];
+            }
+            return '';
+        }
+
+        // Fonction pour convertir l'URL Google Drive en URL d'image affichable
+        function getImageUrl(url) {
+            if (!url) return '';
+            
+            // Extraire l'ID du fichier
+            let fileId = '';
+            
+            if (url.includes('id=')) {
+                fileId = url.split('id=')[1].split('&')[0];
+            } else if (url.includes('/d/')) {
+                fileId = url.split('/d/')[1].split('/')[0];
+            } else if (url.includes('uc?')) {
+                fileId = url.split('id=')[1];
+            }
+            
+            if (fileId) {
+                return `https://lh3.googleusercontent.com/d/${fileId}`;
+            }
+            return url;
+        }
+
+        // Afficher la galerie
+        function renderGallery() {
+            const grid = document.getElementById('galleryGrid');
+            grid.innerHTML = heroes.map((hero, index) => {
+                const logoUrl = getImageUrl(hero.LogoURL || hero['LogoURL']);
+                const heroName = hero.NomHeros || hero['NomHéros'] || 'Sans nom';
+                const prenom1 = hero.Prenom1 || hero['Prénom1'] || hero['Prénom 1'] || '';
+                const prenom2 = hero.Prenom2 || hero['Prénom2'] || hero['Prénom 2'] || '';
+                
+                return `
+                <div class="hero-card" style="animation-delay: ${index * 0.1}s">
+                    <div class="hero-card-image">
+                        ${logoUrl 
+                            ? `<img src="${logoUrl}" alt="${heroName}" onerror="this.parentElement.innerHTML='<div class=\\'placeholder\\'>🦸</div>'">`
+                            : '<div class="placeholder">🦸</div>'
+                        }
+                    </div>
+                    <div class="hero-card-content">
+                        <h3 class="hero-card-name">${heroName}</h3>
+                        <div class="hero-card-power">${hero.Pouvoir || '✨ Mystère'}</div>
+                        <p class="hero-card-creators">Créé par <strong>${prenom1} & ${prenom2}</strong></p>
+                    </div>
+                </div>
+            `}).join('');
+        }
+
+        // Afficher les cartes de vote
+        function renderVoteCards() {
+            const grid = document.getElementById('voteGrid');
+            const votes = JSON.parse(localStorage.getItem('oasis_votes') || '{}');
+            
+            grid.innerHTML = heroes.map((hero, index) => {
+                const logoUrl = getImageUrl(hero.LogoURL || hero['LogoURL']);
+                const heroName = hero.NomHeros || hero['NomHéros'] || 'Sans nom';
+                const voteCount = votes[index] || 0;
+                
+                return `
+                <div class="vote-card">
+                    <div class="vote-card-image">
+                        ${logoUrl 
+                            ? `<img src="${logoUrl}" alt="${heroName}">`
+                            : '<div class="placeholder" style="font-size:5rem;padding:50px;">🦸</div>'
+                        }
+                    </div>
+                    <div class="vote-card-content">
+                        <h3 class="vote-card-name">${heroName}</h3>
+                        <div class="vote-card-power">${hero.Pouvoir || '✨ Mystère'}</div>
+                        <div class="vote-count">
+                            <span>🗳️</span>
+                            <span>${voteCount} votes</span>
+                        </div>
+                    </div>
+                </div>
+            `}).join('');
+        }
+
+        // Voter
+        function vote(index) {
+            votes[index] = (votes[index] || 0) + 1;
+            renderVoteCards();
+            updateResults();
+        }
+
+        // Afficher le gagnant
+        function renderWinner() {
+            const votes = JSON.parse(localStorage.getItem('oasis_votes') || '{}');
+            
+            const sorted = heroes
+                .map((hero, index) => ({ 
+                    ...hero, 
+                    index, 
+                    voteCount: votes[index] || 0,
+                    displayName: hero.NomHeros || hero['NomHéros'] || 'Sans nom',
+                    displayLogo: getImageUrl(hero.LogoURL || hero['LogoURL'] || ''),
+                    creators: (hero.Prenom1 || '') + ' & ' + (hero.Prenom2 || '')
+                }))
+                .sort((a, b) => b.voteCount - a.voteCount);
+
+            const winner = sorted[0];
+            
+            if (winner) {
+                document.getElementById('winnerImg').src = winner.displayLogo || '';
+                document.getElementById('winnerName').textContent = winner.displayName;
+                document.getElementById('winnerCreators').textContent = 'Créé par ' + winner.creators;
+                document.getElementById('winnerVotes').textContent = winner.voteCount + ' votes';
+            }
+        }
+
+        // Changer de mode
+        function switchMode(mode) {
+            currentMode = mode;
+            
+            // Update tabs
+            document.querySelectorAll('.mode-tab').forEach(tab => tab.classList.remove('active'));
+            event.target.classList.add('active');
+            
+            // Update sections
+            document.getElementById('gallerySection').classList.toggle('hidden', mode !== 'gallery');
+            document.getElementById('voteSection').classList.toggle('active', mode === 'vote');
+            document.getElementById('resultsSection').classList.toggle('active', mode === 'results');
+            
+            if (mode === 'results') {
+                renderWinner();
+            }
+        }
+
+        // Actualiser
+        function refreshData() {
+            loadData();
+        }
+
+        // Plein écran
+        function toggleFullscreen() {
+            if (!document.fullscreenElement) {
+                document.documentElement.requestFullscreen();
+            } else {
+                document.exitFullscreen();
+            }
+        }
+
+        // Initialisation
+        document.addEventListener('DOMContentLoaded', () => {
+            loadData();
+            // Actualisation automatique toutes les 5 secondes
+            refreshInterval = setInterval(loadData, 5000);
+        });
+    </script>
+</body>
+</html>
