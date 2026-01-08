@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>L'Oasis des Héros - Créez votre super-héros</title>
+    <link href="https://fonts.googleapis.com/css2?family=Pacifico&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Poppins', sans-serif; min-height: 100vh; background: linear-gradient(180deg, #0a0a1a 0%, #0d1a2d 15%, #0a1f3d 30%, #0c2847 50%, #0a2a4a 70%, #061428 100%); background-attachment: fixed; position: relative; overflow-x: hidden; }
+        body::before { content: ''; position: fixed; top: 20%; left: 50%; transform: translateX(-50%); width: 600px; height: 600px; background: radial-gradient(circle, rgba(0, 180, 255, 0.15) 0%, rgba(0, 150, 255, 0.1) 20%, rgba(100, 0, 255, 0.05) 40%, transparent 70%); pointer-events: none; z-index: 0; animation: pulse-halo 8s ease-in-out infinite; }
+        @keyframes pulse-halo { 0%, 100% { opacity: 0.8; transform: translateX(-50%) scale(1); } 50% { opacity: 1; transform: translateX(-50%) scale(1.1); } }
+        .container { position: relative; z-index: 2; max-width: 500px; margin: 0 auto; padding: 20px; min-height: 100vh; }
+        .container.wide { max-width: 1000px; }
+        .title { text-align: center; margin-bottom: 10px; padding-top: 20px; }
+        .title h1 { font-family: 'Pacifico', cursive; font-size: 2.6rem; background: linear-gradient(135deg, #bf7fff 0%, #ff6b9d 25%, #ff9a56 50%, #ffcd56 75%, #ff6b9d 100%); background-size: 200% auto; -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; animation: gradient-shift 6s ease infinite; }
+        @keyframes gradient-shift { 0%, 100% { background-position: 0% center; } 50% { background-position: 200% center; } }
+        .subtitle { text-align: center; color: rgba(200, 180, 255, 0.8); font-size: 1rem; margin-bottom: 30px; }
+        .section { display: none; }
+        .section.active { display: block; }
+        .form-section { background: rgba(10, 20, 40, 0.6); backdrop-filter: blur(20px); border-radius: 20px; padding: 22px 20px; margin-bottom: 20px; border: 1px solid rgba(100, 150, 255, 0.15); }
+        .section-title { color: #fff; font-size: 1.05rem; font-weight: 600; margin-bottom: 15px; display: flex; align-items: center; gap: 10px; }
+        .input-group { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 15px; }
+        .input-wrapper { display: flex; flex-direction: column; }
+        .input-wrapper.full-width { grid-column: 1 / -1; }
+        .input-wrapper label { color: #b0c4d8; font-size: 0.85rem; margin-bottom: 6px; }
+        .input-wrapper input { background: rgba(255, 255, 255, 0.1); border: 2px solid rgba(255, 255, 255, 0.2); border-radius: 12px; padding: 11px 12px; color: #fff; font-size: 0.95rem; font-family: 'Poppins', sans-serif; }
+        .input-wrapper input:focus { outline: none; border-color: #ff6b9d; background: rgba(255, 255, 255, 0.15); }
+        .input-wrapper input::placeholder { color: rgba(255, 255, 255, 0.4); }
+        .powers-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
+        .power-option { position: relative; }
+        .power-option input[type="radio"] { position: absolute; opacity: 0; width: 100%; height: 100%; cursor: pointer; z-index: 2; }
+        .power-card { background: rgba(255, 255, 255, 0.08); border: 2px solid rgba(255, 255, 255, 0.15); border-radius: 12px; padding: 12px; display: flex; align-items: center; gap: 10px; cursor: pointer; }
+        .power-option input[type="radio"]:checked + .power-card { background: rgba(255, 107, 157, 0.2); border-color: #ff6b9d; }
+        .power-icon { font-size: 1.5rem; }
+        .power-name { color: #fff; font-weight: 500; font-size: 0.9rem; }
+        .custom-power { margin-top: 15px; padding-top: 15px; border-top: 1px solid rgba(255, 255, 255, 0.1); }
+        .custom-power label { color: #b0c4d8; font-size: 0.85rem; display: block; margin-bottom: 8px; }
+        .custom-power input { width: 100%; background: rgba(255, 255, 255, 0.1); border: 2px solid rgba(255, 255, 255, 0.2); border-radius: 12px; padding: 12px 15px; color: #fff; font-size: 1rem; font-family: 'Poppins', sans-serif; }
+        .upload-zone { border: 3px dashed rgba(255, 255, 255, 0.3); border-radius: 16px; padding: 35px 20px; text-align: center; cursor: pointer; position: relative; }
+        .upload-zone:hover { border-color: #ff6b9d; background: rgba(255, 107, 157, 0.1); }
+        .upload-zone.has-image { border-style: solid; border-color: #4ade80; background: rgba(74, 222, 128, 0.1); padding: 20px; }
+        .upload-zone input[type="file"] { position: absolute; top: 0; left: 0; width: 100%; height: 100%; opacity: 0; cursor: pointer; }
+        .upload-placeholder { color: rgba(255, 255, 255, 0.7); }
+        .upload-placeholder .upload-icon { font-size: 3.5rem; margin-bottom: 15px; }
+        .upload-preview { display: none; flex-direction: column; align-items: center; gap: 12px; }
+        .upload-preview.show { display: flex; }
+        .upload-preview img { max-width: 180px; max-height: 180px; border-radius: 12px; }
+        .upload-preview .file-name { color: #4ade80; font-size: 0.9rem; }
+        .upload-preview .change-btn { color: rgba(255, 255, 255, 0.6); font-size: 0.8rem; }
+        .submit-btn { width: 100%; padding: 18px; background: linear-gradient(135deg, #ff6b9d 0%, #c44569 100%); border: none; border-radius: 15px; color: #fff; font-size: 1.15rem; font-weight: 600; font-family: 'Poppins', sans-serif; cursor: pointer; box-shadow: 0 5px 25px rgba(255, 107, 157, 0.4); }
+        .submit-btn:hover { transform: translateY(-3px); }
+        .submit-btn:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+        .submit-btn.loading { color: transparent; position: relative; }
+        .submit-btn.loading::after { content: ''; position: absolute; top: 50%; left: 50%; width: 24px; height: 24px; margin: -12px 0 0 -12px; border: 3px solid rgba(255, 255, 255, 0.3); border-top-color: #fff; border-radius: 50%; animation: spin 0.8s linear infinite; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        .success-section { text-align: center; padding: 30px 0; }
+        .success-icon { font-size: 4rem; margin-bottom: 20px; }
+        .success-title { font-family: 'Pacifico', cursive; font-size: 1.8rem; color: #4ade80; margin-bottom: 10px; }
+        .success-text { color: rgba(255, 255, 255, 0.7); margin-bottom: 25px; }
+        .hero-preview-card { background: rgba(10, 20, 40, 0.7); border-radius: 20px; padding: 25px; border: 2px solid rgba(74, 222, 128, 0.3); max-width: 300px; margin: 0 auto 25px; }
+        .hero-preview-card img { width: 150px; height: 150px; border-radius: 50%; object-fit: contain; background: #fff; margin-bottom: 15px; }
+        .hero-preview-card h3 { font-family: 'Pacifico', cursive; font-size: 1.4rem; color: #fff; margin-bottom: 8px; }
+        .hero-preview-card .power-badge { display: inline-block; background: rgba(255, 107, 157, 0.2); padding: 5px 15px; border-radius: 15px; color: #ff6b9d; font-size: 0.9rem; margin-bottom: 10px; }
+        .hero-preview-card .creators { color: rgba(255, 255, 255, 0.6); font-size: 0.9rem; }
+        .btn { padding: 14px 25px; border: none; border-radius: 12px; font-size: 1rem; font-weight: 600; font-family: 'Poppins', sans-serif; cursor: pointer; }
+        .btn-secondary { background: rgba(255, 255, 255, 0.1); color: #fff; border: 2px solid rgba(255, 255, 255, 0.2); }
+        .btn-secondary:hover { background: rgba(255, 255, 255, 0.2); }
+        .waiting-badge { display: inline-flex; align-items: center; gap: 8px; background: rgba(255, 205, 86, 0.2); padding: 10px 20px; border-radius: 25px; color: #ffcd56; font-size: 0.9rem; margin-top: 20px; }
+        .waiting-badge .dot { width: 8px; height: 8px; background: #ffcd56; border-radius: 50%; animation: blink 1.5s ease-in-out infinite; }
+        @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
+        .vote-section { padding: 20px 0; }
+        .vote-header { text-align: center; margin-bottom: 25px; padding: 20px; background: rgba(10, 20, 40, 0.6); border-radius: 20px; }
+        .vote-header h2 { font-family: 'Pacifico', cursive; font-size: 1.6rem; color: #ff6b9d; margin-bottom: 8px; }
+        .vote-header p { color: rgba(255, 255, 255, 0.7); }
+        .vote-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 20px; }
+        .vote-card { background: rgba(10, 20, 40, 0.7); border-radius: 16px; overflow: hidden; border: 2px solid rgba(100, 150, 255, 0.15); cursor: pointer; position: relative; transition: all 0.3s; }
+        .vote-card:hover:not(.own-card) { transform: translateY(-5px); border-color: rgba(255, 107, 157, 0.5); }
+        .vote-card.own-card { opacity: 0.5; cursor: not-allowed; }
+        .vote-card.own-card::before { content: "Votre logo"; position: absolute; top: 10px; right: 10px; background: #ffcd56; color: #000; padding: 4px 10px; border-radius: 10px; font-size: 0.7rem; font-weight: 600; z-index: 10; }
+        .vote-card.selected { border-color: #4ade80; box-shadow: 0 0 25px rgba(74, 222, 128, 0.4); }
+        .vote-card-image { width: 100%; aspect-ratio: 1; background: rgba(255, 255, 255, 0.95); }
+        .vote-card-image img { width: 100%; height: 100%; object-fit: contain; }
+        .vote-card-content { padding: 12px; text-align: center; }
+        .vote-card-name { font-family: 'Pacifico', cursive; font-size: 1.1rem; color: #fff; margin-bottom: 5px; }
+        .vote-card-power { display: inline-block; background: rgba(255, 107, 157, 0.2); padding: 4px 10px; border-radius: 12px; font-size: 0.8rem; color: #ff6b9d; }
+        .vote-confirm-bar { position: fixed; bottom: 0; left: 0; right: 0; background: rgba(10, 20, 40, 0.95); backdrop-filter: blur(20px); padding: 15px 20px; border-top: 1px solid rgba(100, 150, 255, 0.2); display: none; z-index: 100; }
+        .vote-confirm-bar.show { display: block; }
+        .vote-confirm-inner { max-width: 500px; margin: 0 auto; display: flex; gap: 15px; align-items: center; }
+        .selected-info { flex: 1; color: rgba(255, 255, 255, 0.8); }
+        .selected-info strong { color: #4ade80; }
+        .confirm-btn { padding: 12px 25px; background: linear-gradient(135deg, #4ade80 0%, #22c55e 100%); border: none; border-radius: 12px; color: #fff; font-weight: 600; cursor: pointer; }
+        .voted-section { text-align: center; padding: 50px 20px; }
+        .voted-icon { font-size: 4rem; margin-bottom: 20px; }
+        .voted-title { font-family: 'Pacifico', cursive; font-size: 1.8rem; color: #4ade80; margin-bottom: 10px; }
+        .voted-text { color: rgba(255, 255, 255, 0.7); }
+        .voted-for-box { margin-top: 25px; padding: 20px; background: rgba(74, 222, 128, 0.1); border-radius: 16px; border: 1px solid rgba(74, 222, 128, 0.3); display: inline-block; }
+        .voted-for-label { color: rgba(255, 255, 255, 0.6); font-size: 0.85rem; margin-bottom: 5px; }
+        .voted-for-name { font-family: 'Pacifico', cursive; font-size: 1.4rem; color: #4ade80; }
+        .results-section { padding: 20px 0; text-align: center; }
+        .results-header h2 { font-family: 'Pacifico', cursive; font-size: 2.2rem; color: #ffcd56; margin-bottom: 30px; }
+        .winner-card { max-width: 350px; margin: 0 auto 30px; background: rgba(10, 20, 40, 0.8); border-radius: 25px; padding: 30px; border: 3px solid #ffd700; box-shadow: 0 0 50px rgba(255, 215, 0, 0.3); animation: winner-appear 1s ease; }
+        @keyframes winner-appear { 0% { opacity: 0; transform: scale(0.8); } 100% { opacity: 1; transform: scale(1); } }
+        .winner-crown { font-size: 4rem; margin-bottom: 15px; animation: crown-bounce 2s ease-in-out infinite; }
+        @keyframes crown-bounce { 0%, 100% { transform: translateY(0) rotate(-5deg); } 50% { transform: translateY(-10px) rotate(5deg); } }
+        .winner-image { width: 180px; height: 180px; border-radius: 50%; margin: 0 auto 20px; overflow: hidden; border: 4px solid #ffd700; background: #fff; }
+        .winner-image img { width: 100%; height: 100%; object-fit: contain; }
+        .winner-name { font-family: 'Pacifico', cursive; font-size: 2rem; color: #fff; margin-bottom: 10px; }
+        .winner-creators { color: #ffcd56; font-size: 1.1rem; margin-bottom: 15px; }
+        .winner-votes { display: inline-block; background: rgba(255, 215, 0, 0.2); padding: 10px 25px; border-radius: 25px; color: #ffd700; font-size: 1.2rem; font-weight: 600; }
+        .quit-btn { padding: 15px 40px; background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%); border: none; border-radius: 12px; color: #fff; font-size: 1rem; font-weight: 600; cursor: pointer; margin-top: 20px; }
+        .quit-btn:hover { transform: translateY(-2px); }
+        .footer { text-align: center; padding: 30px 20px; color: rgba(191, 127, 255, 0.6); font-size: 0.85rem; }
+        .confetti { position: fixed; width: 10px; height: 10px; top: -10px; z-index: 101; animation: confetti-fall 3s ease-out forwards; }
+        @keyframes confetti-fall { 0% { transform: translateY(0) rotate(0deg); opacity: 1; } 100% { transform: translateY(100vh) rotate(720deg); opacity: 0; } }
+        @media (max-width: 500px) { .title h1 { font-size: 2rem; } .vote-grid { grid-template-columns: repeat(2, 1fr); gap: 12px; } .input-group { grid-template-columns: 1fr; } }
+    </style>
+</head>
+<body>
+    <div class="container" id="mainContainer">
+        <div class="title"><h1>L'Oasis des Héros</h1></div>
+        <p class="subtitle" id="mainSubtitle">Créez l'identité visuelle de votre super-héros</p>
+
+        <div class="section active" id="formSection">
+            <form id="heroForm">
+                <div class="form-section">
+                    <div class="section-title"><span>👥</span><span>Votre Duo</span></div>
+                    <div class="input-group">
+                        <div class="input-wrapper"><label>Prénom 1</label><input type="text" id="prenom1" placeholder="Premier prénom" required></div>
+                        <div class="input-wrapper"><label>Prénom 2</label><input type="text" id="prenom2" placeholder="Second prénom" required></div>
+                    </div>
+                    <div class="input-group"><div class="input-wrapper full-width"><label>Nom de votre héros</label><input type="text" id="heroName" placeholder="Ex: Shadow Phoenix..." required></div></div>
+                </div>
+                <div class="form-section">
+                    <div class="section-title"><span>💫</span><span>Pouvoir du Héros</span></div>
+                    <div class="powers-grid">
+                        <label class="power-option"><input type="radio" name="power" value="Feu" data-icon="🔥"><div class="power-card"><span class="power-icon">🔥</span><span class="power-name">Feu</span></div></label>
+                        <label class="power-option"><input type="radio" name="power" value="Nature" data-icon="🌿"><div class="power-card"><span class="power-icon">🌿</span><span class="power-name">Nature</span></div></label>
+                        <label class="power-option"><input type="radio" name="power" value="Eau" data-icon="🌊"><div class="power-card"><span class="power-icon">🌊</span><span class="power-name">Eau</span></div></label>
+                        <label class="power-option"><input type="radio" name="power" value="Lumière" data-icon="☀️"><div class="power-card"><span class="power-icon">☀️</span><span class="power-name">Lumière</span></div></label>
+                        <label class="power-option"><input type="radio" name="power" value="Air" data-icon="💨"><div class="power-card"><span class="power-icon">💨</span><span class="power-name">Air</span></div></label>
+                        <label class="power-option"><input type="radio" name="power" value="Tech" data-icon="🤖"><div class="power-card"><span class="power-icon">🤖</span><span class="power-name">Tech</span></div></label>
+                        <label class="power-option"><input type="radio" name="power" value="Électricité" data-icon="⚡"><div class="power-card"><span class="power-icon">⚡</span><span class="power-name">Électricité</span></div></label>
+                        <label class="power-option"><input type="radio" name="power" value="Ténèbre" data-icon="🌑"><div class="power-card"><span class="power-icon">🌑</span><span class="power-name">Ténèbre</span></div></label>
+                        <label class="power-option"><input type="radio" name="power" value="Terre" data-icon="🏔️"><div class="power-card"><span class="power-icon">🏔️</span><span class="power-name">Terre</span></div></label>
+                        <label class="power-option"><input type="radio" name="power" value="Télékinésie" data-icon="🧠"><div class="power-card"><span class="power-icon">🧠</span><span class="power-name">Télékinésie</span></div></label>
+                    </div>
+                    <div class="custom-power"><label>Ou votre pouvoir personnalisé :</label><input type="text" id="customPower" placeholder="Décrivez votre pouvoir unique..."></div>
+                </div>
+                <div class="form-section">
+                    <div class="section-title"><span>🖼️</span><span>Logo du Héros</span></div>
+                    <div class="upload-zone" id="uploadZone">
+                        <input type="file" id="logoUpload" accept="image/*" required>
+                        <div class="upload-placeholder" id="uploadPlaceholder"><div class="upload-icon">📤</div><p>Uploadez votre logo</p><span>PNG, JPG (max 15MB)</span></div>
+                        <div class="upload-preview" id="uploadPreview"><img id="previewImage" src=""><span class="file-name" id="fileName"></span><span class="change-btn">Cliquer pour changer</span></div>
+                    </div>
+                </div>
+                <button type="submit" class="submit-btn" id="submitBtn">✨ Révéler mon Héros ✨</button>
+            </form>
+        </div>
+
+        <div class="section success-section" id="successSection">
+            <div class="success-icon">✅</div>
+            <h2 class="success-title">Héros envoyé !</h2>
+            <p class="success-text">Votre création a bien été enregistrée</p>
+            <div class="hero-preview-card"><img id="previewHeroImg" src=""><h3 id="previewHeroName">-</h3><div class="power-badge" id="previewHeroPower">-</div><p class="creators" id="previewHeroCreators">-</p></div>
+            <button class="btn btn-secondary" onclick="modifyHero()">✏️ Modifier / Créer un autre</button>
+            <div class="waiting-badge"><span class="dot"></span><span>En attente du vote...</span></div>
+        </div>
+
+        <div class="section vote-section" id="voteSection">
+            <div class="vote-header"><h2>🗳️ Votez !</h2><p>Choisissez UN logo (pas le vôtre)</p></div>
+            <div class="vote-grid" id="voteGrid"></div>
+        </div>
+
+        <div class="section voted-section" id="votedSection">
+            <div class="voted-icon">✅</div>
+            <h2 class="voted-title">Vote enregistré !</h2>
+            <p class="voted-text">Attendez les résultats...</p>
+            <div class="voted-for-box"><div class="voted-for-label">Vous avez voté pour</div><div class="voted-for-name" id="votedForName">-</div></div>
+        </div>
+
+        <div class="section results-section" id="resultsSection">
+            <div class="results-header"><h2>🏆 Le Gagnant</h2></div>
+            <div class="winner-card"><div class="winner-crown">👑</div><div class="winner-image"><img id="winnerImg" src=""></div><h3 class="winner-name" id="winnerName">-</h3><p class="winner-creators" id="winnerCreators">-</p><div class="winner-votes" id="winnerVotes">0 votes</div></div>
+            <button class="quit-btn" onclick="quitSession()">🚪 Quitter la session</button>
+        </div>
+
+        <div class="footer">JPO IUT de Guadeloupe • BUT MMI</div>
+    </div>
+
+    <div class="vote-confirm-bar" id="voteConfirmBar">
+        <div class="vote-confirm-inner">
+            <div class="selected-info">Votre choix : <strong id="selectedName">-</strong></div>
+            <button class="confirm-btn" onclick="confirmVote()">✓ Confirmer</button>
+        </div>
+    </div>
+
+    <script>
+        const API_URL = 'https://script.google.com/macros/s/AKfycbwgRw8FaB_DDCxJEzXnXkajnbBZ16F0Q55MksyDZizM_O4qCZMm4SBgZmvBRq1_Ge465g/exec';
+        let uploadedImageData = null, heroes = [], selectedHeroIndex = null;
+        let myDuoKey = localStorage.getItem('oasis_duo_key'), myHeroName = localStorage.getItem('oasis_hero_name');
+        let myHeroImg = localStorage.getItem('oasis_hero_img'), myHeroPower = localStorage.getItem('oasis_hero_power');
+        let hasSubmitted = localStorage.getItem('oasis_has_submitted') === 'true';
+        let hasVoted = localStorage.getItem('oasis_has_voted') === 'true';
+        let votedFor = localStorage.getItem('oasis_voted_for');
+
+        document.getElementById('logoUpload').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                if (file.size > 15 * 1024 * 1024) { alert('Max 15MB'); return; }
+                const reader = new FileReader();
+                reader.onload = function(ev) {
+                    uploadedImageData = ev.target.result;
+                    document.getElementById('previewImage').src = uploadedImageData;
+                    document.getElementById('fileName').textContent = file.name;
+                    document.getElementById('uploadPlaceholder').style.display = 'none';
+                    document.getElementById('uploadPreview').classList.add('show');
+                    document.getElementById('uploadZone').classList.add('has-image');
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+
+        document.getElementById('customPower').addEventListener('input', function() {
+            if (this.value.trim()) document.querySelectorAll('input[name="power"]').forEach(r => r.checked = false);
+        });
+        document.querySelectorAll('input[name="power"]').forEach(r => r.addEventListener('change', () => document.getElementById('customPower').value = ''));
+
+        function createConfetti() {
+            const colors = ['#ff6b9d', '#ffcd56', '#4ade80', '#4a90d9', '#a855f7'];
+            for (let i = 0; i < 50; i++) {
+                setTimeout(() => {
+                    const c = document.createElement('div');
+                    c.className = 'confetti';
+                    c.style.left = Math.random() * 100 + 'vw';
+                    c.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                    document.body.appendChild(c);
+                    setTimeout(() => c.remove(), 4000);
+                }, i * 30);
+            }
+        }
+
+        document.getElementById('heroForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const prenom1 = document.getElementById('prenom1').value.trim();
+            const prenom2 = document.getElementById('prenom2').value.trim();
+            const heroName = document.getElementById('heroName').value.trim();
+            const customPower = document.getElementById('customPower').value.trim();
+            const selectedPower = document.querySelector('input[name="power"]:checked');
+            const submitBtn = document.getElementById('submitBtn');
+            if (!prenom1 || !prenom2 || !heroName) { alert('Remplissez tout'); return; }
+            if (!selectedPower && !customPower) { alert('Choisissez un pouvoir'); return; }
+            if (!uploadedImageData) { alert('Uploadez votre logo'); return; }
+            let powerName = customPower || selectedPower.value;
+            let powerIcon = customPower ? '✨' : selectedPower.dataset.icon;
+            let fullPower = powerIcon + ' ' + powerName;
+            submitBtn.disabled = true; submitBtn.classList.add('loading');
+            try {
+                await fetch(API_URL, { method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ prenom1, prenom2, nomHeros: heroName, pouvoir: fullPower, logo: uploadedImageData }) });
+                myDuoKey = prenom1 + ' & ' + prenom2; myHeroName = heroName; myHeroImg = uploadedImageData; myHeroPower = fullPower;
+                localStorage.setItem('oasis_duo_key', myDuoKey); localStorage.setItem('oasis_hero_name', myHeroName);
+                localStorage.setItem('oasis_hero_img', myHeroImg); localStorage.setItem('oasis_hero_power', myHeroPower);
+                localStorage.setItem('oasis_has_submitted', 'true'); hasSubmitted = true;
+                createConfetti(); setTimeout(() => showSuccessSection(), 500);
+            } catch (err) { alert('Erreur'); }
+            finally { submitBtn.disabled = false; submitBtn.classList.remove('loading'); }
+        });
+
+        function hideAll() { document.querySelectorAll('.section').forEach(s => s.classList.remove('active')); document.getElementById('voteConfirmBar').classList.remove('show'); }
+        function showFormSection() { hideAll(); document.getElementById('formSection').classList.add('active'); document.getElementById('mainContainer').classList.remove('wide'); document.getElementById('mainSubtitle').textContent = "Créez l'identité visuelle de votre super-héros"; }
+        function showSuccessSection() { hideAll(); document.getElementById('successSection').classList.add('active'); document.getElementById('mainContainer').classList.remove('wide'); document.getElementById('mainSubtitle').textContent = "Votre héros est prêt !"; document.getElementById('previewHeroImg').src = myHeroImg || ''; document.getElementById('previewHeroName').textContent = myHeroName || '-'; document.getElementById('previewHeroPower').textContent = myHeroPower || '-'; document.getElementById('previewHeroCreators').textContent = 'Créé par ' + myDuoKey; }
+        function modifyHero() { hasSubmitted = false; localStorage.setItem('oasis_has_submitted', 'false'); if (myDuoKey) { const p = myDuoKey.split(' & '); document.getElementById('prenom1').value = p[0] || ''; document.getElementById('prenom2').value = p[1] || ''; } document.getElementById('heroName').value = myHeroName || ''; if (myHeroImg) { uploadedImageData = myHeroImg; document.getElementById('previewImage').src = myHeroImg; document.getElementById('uploadPlaceholder').style.display = 'none'; document.getElementById('uploadPreview').classList.add('show'); document.getElementById('uploadZone').classList.add('has-image'); } showFormSection(); }
+        function showVoteSection() { hideAll(); document.getElementById('voteSection').classList.add('active'); document.getElementById('mainContainer').classList.add('wide'); document.getElementById('mainSubtitle').textContent = "Votez !"; renderVoteCards(); }
+        function showVotedSection() { hideAll(); document.getElementById('votedSection').classList.add('active'); document.getElementById('mainContainer').classList.remove('wide'); document.getElementById('mainSubtitle').textContent = "Merci !"; if (votedFor) document.getElementById('votedForName').textContent = votedFor; }
+        function showResultsSection() { hideAll(); document.getElementById('resultsSection').classList.add('active'); document.getElementById('mainContainer').classList.remove('wide'); document.getElementById('mainSubtitle').textContent = "🏆 Le Gagnant !"; renderWinner(); }
+        function quitSession() { ['oasis_duo_key','oasis_hero_name','oasis_hero_img','oasis_hero_power','oasis_has_submitted','oasis_has_voted','oasis_voted_for'].forEach(k => localStorage.removeItem(k)); myDuoKey = myHeroName = myHeroImg = myHeroPower = votedFor = null; hasSubmitted = hasVoted = false; uploadedImageData = null; selectedHeroIndex = null; document.getElementById('heroForm').reset(); document.getElementById('uploadPlaceholder').style.display = 'block'; document.getElementById('uploadPreview').classList.remove('show'); document.getElementById('uploadZone').classList.remove('has-image'); showFormSection(); }
+        async function loadHeroes() { try { const r = await fetch(API_URL); const d = await r.json(); if (Array.isArray(d)) heroes = d.filter(h => h.NomHeros); } catch(e) {} }
+        function getImageUrl(url) { if (!url) return ''; let id = ''; if (url.includes('id=')) id = url.split('id=')[1].split('&')[0]; else if (url.includes('/d/')) id = url.split('/d/')[1].split('/')[0]; return id ? 'https://lh3.googleusercontent.com/d/' + id : url; }
+        function renderVoteCards() { const g = document.getElementById('voteGrid'); g.innerHTML = heroes.map((h, i) => { const logo = getImageUrl(h.LogoURL); const name = h.NomHeros || 'Sans nom'; const duo = (h.Prenom1||'') + ' & ' + (h.Prenom2||''); const own = myDuoKey && duo === myDuoKey; return '<div class="vote-card '+(own?'own-card':'')+'" data-index="'+i+'" data-name="'+name+'" onclick="selectCard('+i+','+own+')"><div class="vote-card-image">'+(logo?'<img src="'+logo+'">':'<div style="font-size:4rem;padding:40px;text-align:center">🦸</div>')+'</div><div class="vote-card-content"><h3 class="vote-card-name">'+name+'</h3><div class="vote-card-power">'+(h.Pouvoir||'✨')+'</div></div></div>'; }).join(''); }
+        function selectCard(i, own) { if (own || hasVoted) return; document.querySelectorAll('.vote-card').forEach(c => c.classList.remove('selected')); const card = document.querySelector('[data-index="'+i+'"]'); card.classList.add('selected'); selectedHeroIndex = i; document.getElementById('voteConfirmBar').classList.add('show'); document.getElementById('selectedName').textContent = card.dataset.name; }
+        function confirmVote() { if (selectedHeroIndex === null) return; const card = document.querySelector('[data-index="'+selectedHeroIndex+'"]'); const name = card.dataset.name; let votes = JSON.parse(localStorage.getItem('oasis_votes') || '{}'); votes[selectedHeroIndex] = (votes[selectedHeroIndex] || 0) + 1; localStorage.setItem('oasis_votes', JSON.stringify(votes)); hasVoted = true; votedFor = name; localStorage.setItem('oasis_has_voted', 'true'); localStorage.setItem('oasis_voted_for', name); showVotedSection(); }
+        function renderWinner() { const votes = JSON.parse(localStorage.getItem('oasis_votes') || '{}'); const total = Object.values(votes).reduce((a,b)=>a+b,0); if (total === 0 || heroes.length === 0) { document.getElementById('winnerCard').innerHTML = '<div class="winner-crown">🤷</div><h3 class="winner-name">Aucun vote</h3>'; return; } const sorted = heroes.map((h,i) => ({...h, i, v: votes[i]||0, name: h.NomHeros||'Sans nom', logo: getImageUrl(h.LogoURL||''), creators: (h.Prenom1||'')+' & '+(h.Prenom2||'')})).sort((a,b)=>b.v-a.v); const w = sorted[0]; if (w && w.v > 0) { document.getElementById('winnerImg').src = w.logo; document.getElementById('winnerName').textContent = w.name; document.getElementById('winnerCreators').textContent = 'Créé par ' + w.creators; document.getElementById('winnerVotes').textContent = w.v + ' votes'; createConfetti(); } }
+        function checkStatus() { const status = localStorage.getItem('oasis_vote_status') || 'waiting'; if (status === 'ended') { showResultsSection(); return; } if (!hasSubmitted) { showFormSection(); return; } if (status === 'active') { if (hasVoted) showVotedSection(); else showVoteSection(); return; } showSuccessSection(); }
+        document.addEventListener('DOMContentLoaded', async () => { await loadHeroes(); checkStatus(); setInterval(async () => { await loadHeroes(); checkStatus(); }, 3000); });
+    </script>
+</body>
+</html>
